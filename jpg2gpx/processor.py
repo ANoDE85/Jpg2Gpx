@@ -4,10 +4,7 @@ import os
 
 from . import model
 from . import sorters
-from . import writer
-
-
-SortModes = sorters.SortModes
+from . import writers
 
 
 class Processor(object):
@@ -18,12 +15,15 @@ class Processor(object):
     def __is_jpeg(f):
         return os.path.splitext(f)[1].lower() in (".jpg", ".jpeg")
 
-    def process(self, input_dir, recoursive, sort_mode, output_name):
+    def process(self, input_dir, recoursive, sort_mode, output_name, group_by_date):
+        ext = os.path.splitext(output_name)[1]
+        writer = writers.load_writer_for_ext(ext)
+        if writer is None:
+            raise RuntimeError(f"No writer for extension {ext} found!")
         input_files = self._load_file_list(input_dir, recoursive)
         input_files.sort(key = sorters.Sorters[sort_mode])
-        writer.write_gpx_file(output_name, input_files)
+        writer.write(output_name, input_files, group_by_date)
         
-
     def _load_file_list(self, input_dir, recoursive):
         file_list = []
         if not recoursive:
