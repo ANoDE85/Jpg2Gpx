@@ -1,4 +1,5 @@
 
+import logging
 import os
 
 from . import model
@@ -33,7 +34,7 @@ class Processor(object):
         return list(filter(self._check_valid_gps_coordinates, file_list))
 
     def _check_valid_gps_coordinates(self, image_info):
-        if image_info.GPSCoordinates is None:
-            print(f"File '{image_info.Path}' does not contain valid GPS coordinates (EXIF info missing or no GPS data)")
+        if image_info.GPSInfo is None:
+            logging.warning(f"File '{image_info.Path}' does not contain valid GPS coordinates (EXIF info missing or no GPS data)")
             return False
         return True
